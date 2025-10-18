@@ -5,70 +5,38 @@
   text-align: center;
 }
 
-.App {
-  text-align: center;
+.logo {
+  height: 6em;
+  padding: 1.5em;
+  will-change: filter;
+  transition: filter 300ms;
+}
+.logo:hover {
+  filter: drop-shadow(0 0 2em #646cffaa);
+}
+.logo.react:hover {
+  filter: drop-shadow(0 0 2em #61dafbaa);
 }
 
-.App-header {
-  background-color: #282c34;
-  padding: 20px;
-  color: white;
-  border-radius: 8px;
-  margin-bottom: 2rem;
+@keyframes logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
-.App-header h1 {
-  margin: 0 0 1rem 0;
-  font-size: 2.5rem;
+@media (prefers-reduced-motion: no-preference) {
+  a:nth-of-type(2) .logo {
+    animation: logo-spin infinite 20s linear;
+  }
 }
 
-.App-header p {
-  margin: 0 0 2rem 0;
-  font-size: 1.2rem;
-  opacity: 0.8;
+.card {
+  padding: 2em;
 }
 
-.counter-section {
-  background-color: #f0f0f0;
-  padding: 2rem;
-  border-radius: 8px;
-  margin: 2rem 0;
-}
-
-.counter-section h2 {
-  color: #333;
-  margin: 0 0 1rem 0;
-}
-
-.counter-display {
-  margin: 1rem 0;
-  font-size: 1.5rem;
-  font-weight: bold;
-  color: #2c3e50;
-}
-
-.counter-buttons {
-  display: flex;
-  gap: 1rem;
-  justify-content: center;
-  flex-wrap: wrap;
-}
-
-.counter-buttons button {
-  background-color: #007bff;
-  color: white;
-  border: none;
-  padding: 0.75rem 1.5rem;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 1rem;
-  transition: background-color 0.3s;
-}
-
-.counter-buttons button:hover {
-  background-color: #0056b3;
-}
-
-.counter-buttons button:active {
-  transform: translateY(1px);
+.read-the-docs {
+  color: #888;
 }
