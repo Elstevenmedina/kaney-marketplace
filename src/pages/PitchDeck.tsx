@@ -1,5 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
+import logoDark from '../assets/logo-dark.png';
+import kaneyPhone from '../assets/kaney_phone.png';
+import kaneyProviderPhone from '../assets/kaney_provider_phone.png';
 
 const PitchDeck = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -15,7 +18,7 @@ const PitchDeck = () => {
               <span className="font-bold">BRIDGES</span> presenta
             </p>
             <img 
-              src="/public/assets/logo-dark.png" 
+              src={logoDark} 
               alt="Kaney Logo" 
               className="h-32 w-auto mx-auto"
             />
@@ -210,13 +213,13 @@ const PitchDeck = () => {
                       <div className="w-3/5 flex items-center justify-end space-x-2">
                         {/* Imagen principal (marketplace) */}
                         <img 
-                          src="/public/assets/kaney_phone.png" 
+                          src={kaneyPhone} 
                           alt="App KANEY - Interfaz móvil" 
                           className="w-64 h-auto rounded-2xl mr-8"
                         />
                         {/* Imagen secundaria (provider) */}
                         <img 
-                          src="/public/assets/kaney_provider_phone.png" 
+                          src={kaneyProviderPhone} 
                           alt="App KANEY Provider - Interfaz móvil" 
                           className="w-64 h-auto rounded-2xl opacity-80 -mt-6 ml-8"
                         />
@@ -701,7 +704,7 @@ const PitchDeck = () => {
       >
             <div className="flex items-center justify-center">
               <img 
-                src="/public/assets/logo-dark.png" 
+                src={logoDark} 
                 alt="Kaney Logo" 
                 className="h-6 w-auto"
               />
