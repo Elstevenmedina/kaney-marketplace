@@ -15,7 +15,7 @@ const PitchDeck = () => {
               <span className="font-bold">BRIDGES</span> presenta
             </p>
             <img 
-              src="/src/assets/logo-dark.png" 
+              src="/public/assets/logo-dark.png" 
               alt="Kaney Logo" 
               className="h-32 w-auto mx-auto"
             />
@@ -210,13 +210,13 @@ const PitchDeck = () => {
                       <div className="w-3/5 flex items-center justify-end space-x-2">
                         {/* Imagen principal (marketplace) */}
                         <img 
-                          src="/src/assets/kaney_phone.png" 
+                          src="/public/assets/kaney_phone.png" 
                           alt="App KANEY - Interfaz móvil" 
                           className="w-64 h-auto rounded-2xl mr-8"
                         />
                         {/* Imagen secundaria (provider) */}
                         <img 
-                          src="/src/assets/kaney_provider_phone.png" 
+                          src="/public/assets/kaney_provider_phone.png" 
                           alt="App KANEY Provider - Interfaz móvil" 
                           className="w-64 h-auto rounded-2xl opacity-80 -mt-6 ml-8"
                         />
@@ -701,7 +701,7 @@ const PitchDeck = () => {
       >
             <div className="flex items-center justify-center">
               <img 
-                src="/src/assets/logo-dark.png" 
+                src="/public/assets/logo-dark.png" 
                 alt="Kaney Logo" 
                 className="h-6 w-auto"
               />
