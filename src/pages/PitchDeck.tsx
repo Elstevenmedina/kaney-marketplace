@@ -154,19 +154,19 @@ const PitchDeck = () => {
       title: "Solución",
       content: (
         <div className="h-full flex flex-col">
-          <div className="max-w-6xl mx-auto px-8 py-8">
-            <h2 className="text-5xl font-bold text-left mb-6" style={{ color: '#16423c' }}>
+          <div className="max-w-6xl mx-auto px-8 py-4">
+            <h2 className="text-4xl font-bold text-left mb-4" style={{ color: '#16423c' }}>
               Presentamos un Ecosistema B2B Inteligente
             </h2>
-            <p className="text-2xl text-left mb-12" style={{ color: '#6a9c89' }}>
+            <p className="text-xl text-left mb-8" style={{ color: '#6a9c89' }}>
               <span className="font-bold">KANEY</span> es una plataforma que re-imagina la logística agrícola, haciéndola más rentable, eficiente y confiable.
             </p>
             
             <div className="flex">
                       {/* Contenido compactado a la izquierda */}
                       <div className="w-2/5 pr-4">
-                        <div className="space-y-6 -mt-8">
-                          <h3 className="text-2xl font-bold mb-6" style={{ color: '#16423c' }}>Nuestro Proceso</h3>
+                        <div className="space-y-4">
+                          <h3 className="text-xl font-bold mb-4" style={{ color: '#16423c' }}>Nuestro Proceso</h3>
                   
                   {/* Paso 1: Marketplace */}
                   <div className="relative">
@@ -174,9 +174,9 @@ const PitchDeck = () => {
                       <div className="w-10 h-10 rounded-full flex items-center justify-center mr-3" style={{ backgroundColor: '#ff751f' }}>
                         <span className="text-white text-sm font-bold">1</span>
                       </div>
-                      <h4 className="text-xl font-bold" style={{ color: '#16423c' }}>Marketplace Inteligente</h4>
+                      <h4 className="text-lg font-bold" style={{ color: '#16423c' }}>Marketplace Inteligente</h4>
                     </div>
-                            <p className="text-base leading-relaxed ml-13" style={{ color: '#6a9c89' }}>
+                            <p className="text-sm leading-relaxed ml-13" style={{ color: '#6a9c89' }}>
                               Los productores publican sus productos, dándoles visibilidad masiva a nivel nacional.
                             </p>
                   </div>
@@ -187,9 +187,9 @@ const PitchDeck = () => {
                       <div className="w-10 h-10 rounded-full flex items-center justify-center mr-3" style={{ backgroundColor: '#6a9c89' }}>
                         <span className="text-white text-sm font-bold">2</span>
                       </div>
-                      <h4 className="text-xl font-bold" style={{ color: '#16423c' }}>Logística Optimizada</h4>
+                      <h4 className="text-lg font-bold" style={{ color: '#16423c' }}>Logística Optimizada</h4>
                     </div>
-                            <p className="text-base leading-relaxed ml-13" style={{ color: '#6a9c89' }}>
+                            <p className="text-sm leading-relaxed ml-13" style={{ color: '#6a9c89' }}>
                               Creamos una ruta de recogida para buscar los productos en el campo. Estos son llevados a nuestro cross docking, y de ahí la entrega hacia sus compradores será manejada por Yummy.
                             </p>
                   </div>
@@ -200,9 +200,9 @@ const PitchDeck = () => {
                       <div className="w-10 h-10 rounded-full flex items-center justify-center mr-3" style={{ backgroundColor: '#c4dad2' }}>
                         <span className="text-sm font-bold" style={{ color: '#16423c' }}>3</span>
                       </div>
-                      <h4 className="text-xl font-bold" style={{ color: '#16423c' }}>Control de Calidad</h4>
+                      <h4 className="text-lg font-bold" style={{ color: '#16423c' }}>Control de Calidad</h4>
                     </div>
-                            <p className="text-base leading-relaxed ml-13" style={{ color: '#6a9c89' }}>
+                            <p className="text-sm leading-relaxed ml-13" style={{ color: '#6a9c89' }}>
                               Inspeccionamos cada producto para garantizar calidad. Cualquier producto que no sea apto para consumo humano, será reutilizado en nuestro portal KANEY Sustentable, reduciendo así la merma.
                             </p>
                   </div>
@@ -648,7 +648,7 @@ const PitchDeck = () => {
       <div className="fixed bottom-12 left-8 z-10">
         <div className="flex space-x-4">
           <p className="text-sm" style={{ color: '#16423c' }}>www.kaneyconecta.com</p>
-          <p className="text-sm" style={{ color: '#16423c' }}>kaney@conecta.com</p>
+          <p className="text-sm" style={{ color: '#16423c' }}>conecta@kaney.com</p>
         </div>
       </div>
 
@@ -714,4 +714,4 @@ const PitchDeck = () => {
   );
 };
 
-export default PitchDeck;
+export default PitchDeck;
