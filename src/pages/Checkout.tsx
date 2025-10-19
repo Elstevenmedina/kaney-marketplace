@@ -35,8 +35,8 @@ export default function Checkout() {
   const cartItems = useAppSelector((state) => state.cart.items);
   const currency = useAppSelector((state) => state.cart.currency);
   const exchangeRate = useAppSelector((state) => state.cart.exchangeRate);
+  const isAuthenticated = useAppSelector((state) => state.auth.isAuthenticated);
   
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [orderCompleted, setOrderCompleted] = useState(false);
 
   // Check if cart is empty
@@ -46,6 +46,13 @@ export default function Checkout() {
       navigate('/marketplace');
     }
   }, [cartItems, navigate, orderCompleted]);
+
+  // Auto-advance if user is already authenticated
+  useEffect(() => {
+    if (isAuthenticated && currentStep === 0) {
+      dispatch(setCurrentStep(1));
+    }
+  }, [isAuthenticated, currentStep, dispatch]);
 
   // Calculate shipping based on delivery location
   const calculateShipping = (deliveryInfo: any) => {
@@ -106,7 +113,6 @@ export default function Checkout() {
   };
 
   const handleAuthContinue = () => {
-    setIsAuthenticated(true);
     dispatch(setCurrentStep(1));
     toast.success('Sesión verificada correctamente');
   };

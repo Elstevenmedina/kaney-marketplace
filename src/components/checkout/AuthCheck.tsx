@@ -5,6 +5,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
+import { useAppDispatch, useAppSelector } from '@/store/hooks';
+import { loginUser, registerUser, clearError } from '@/store/slices/authSlice';
 
 interface AuthCheckProps {
   isAuthenticated: boolean;
@@ -28,6 +30,9 @@ interface RegisterFormData {
 }
 
 export const AuthCheck = ({ isAuthenticated, onNext, loading }: AuthCheckProps) => {
+  const dispatch = useAppDispatch();
+  const { loading: authLoading, error } = useAppSelector((state) => state.auth);
+  
   const [showLoginForm, setShowLoginForm] = useState(false);
   const [showRegisterForm, setShowRegisterForm] = useState(false);
   const [loginData, setLoginData] = useState<LoginFormData>({
@@ -43,23 +48,16 @@ export const AuthCheck = ({ isAuthenticated, onNext, loading }: AuthCheckProps) 
     phone: '',
     acceptTerms: false
   });
-  const [isLoggingIn, setIsLoggingIn] = useState(false);
-  const [isRegistering, setIsRegistering] = useState(false);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsLoggingIn(true);
-
-    // Simulate login process
-    setTimeout(() => {
-      if (loginData.email && loginData.password) {
-        toast.success('¡Inicio de sesión exitoso!');
-        onNext();
-      } else {
-        toast.error('Por favor completa todos los campos');
-      }
-      setIsLoggingIn(false);
-    }, 1500);
+    dispatch(clearError());
+    
+    const result = await dispatch(loginUser(loginData));
+    if (loginUser.fulfilled.match(result)) {
+      toast.success('¡Inicio de sesión exitoso!');
+      onNext();
+    }
   };
 
   const handleLoginInputChange = (field: keyof LoginFormData, value: string) => {
@@ -78,32 +76,31 @@ export const AuthCheck = ({ isAuthenticated, onNext, loading }: AuthCheckProps) 
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsRegistering(true);
-
-    // Validate passwords match
+    dispatch(clearError());
+    
     if (registerData.password !== registerData.confirmPassword) {
       toast.error('Las contraseñas no coinciden');
-      setIsRegistering(false);
       return;
     }
 
-    // Validate terms acceptance
     if (!registerData.acceptTerms) {
       toast.error('Debes aceptar los términos y condiciones');
-      setIsRegistering(false);
       return;
     }
-
-    // Simulate registration process
-    setTimeout(() => {
-      if (registerData.firstName && registerData.lastName && registerData.email && registerData.password) {
-        toast.success('¡Cuenta creada exitosamente!');
-        onNext();
-      } else {
-        toast.error('Por favor completa todos los campos requeridos');
-      }
-      setIsRegistering(false);
-    }, 2000);
+    
+    const result = await dispatch(registerUser({
+      firstName: registerData.firstName,
+      lastName: registerData.lastName,
+      email: registerData.email,
+      password: registerData.password,
+      phone: registerData.phone,
+      businessType: 'individual' // Default value
+    }));
+    
+    if (registerUser.fulfilled.match(result)) {
+      toast.success('¡Cuenta creada exitosamente!');
+      onNext();
+    }
   };
 
   if (isAuthenticated) {
@@ -163,6 +160,11 @@ export const AuthCheck = ({ isAuthenticated, onNext, loading }: AuthCheckProps) 
         </CardHeader>
         <CardContent>
           <form onSubmit={handleRegister} className="space-y-4">
+            {error && (
+              <div className="p-3 text-sm text-red-600 bg-red-50 border border-red-200 rounded-md">
+                {error}
+              </div>
+            )}
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="firstName">Nombre</Label>
@@ -241,6 +243,7 @@ export const AuthCheck = ({ isAuthenticated, onNext, loading }: AuthCheckProps) 
               <input
                 type="checkbox"
                 id="acceptTerms"
+                title="Aceptar términos y condiciones"
                 checked={registerData.acceptTerms}
                 onChange={(e) => handleRegisterInputChange('acceptTerms', e.target.checked)}
                 className="rounded border-gray-300"
@@ -262,10 +265,10 @@ export const AuthCheck = ({ isAuthenticated, onNext, loading }: AuthCheckProps) 
               type="submit"
               size="lg"
               className="w-full"
-              disabled={isRegistering}
+              disabled={authLoading}
             >
               <UserPlus className="h-4 w-4 mr-2" />
-              {isRegistering ? 'Creando cuenta...' : 'Crear Cuenta'}
+              {authLoading ? 'Creando cuenta...' : 'Crear Cuenta'}
             </Button>
           </form>
 
@@ -308,6 +311,11 @@ export const AuthCheck = ({ isAuthenticated, onNext, loading }: AuthCheckProps) 
         </CardHeader>
         <CardContent>
           <form onSubmit={handleLogin} className="space-y-4">
+            {error && (
+              <div className="p-3 text-sm text-red-600 bg-red-50 border border-red-200 rounded-md">
+                {error}
+              </div>
+            )}
             <div className="space-y-2">
               <Label htmlFor="email">Correo electrónico</Label>
               <Input
@@ -336,10 +344,10 @@ export const AuthCheck = ({ isAuthenticated, onNext, loading }: AuthCheckProps) 
               type="submit"
               size="lg"
               className="w-full"
-              disabled={isLoggingIn}
+              disabled={authLoading}
             >
               <LogIn className="h-4 w-4 mr-2" />
-              {isLoggingIn ? 'Iniciando sesión...' : 'Iniciar Sesión'}
+              {authLoading ? 'Iniciando sesión...' : 'Iniciar Sesión'}
             </Button>
           </form>
 
