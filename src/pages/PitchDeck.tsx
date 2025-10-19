@@ -46,76 +46,99 @@ const PitchDeck = () => {
       title: "Problema",
       content: (
         <div className="h-full flex flex-col">
-          <div className="max-w-6xl mx-auto px-8 py-8">
-            <h2 className="text-5xl font-bold text-left mb-6" style={{ color: '#16423c' }}>
+          <div className="max-w-7xl mx-auto px-8 h-full flex flex-col">
+            <h2 className="text-5xl font-bold text-left mt-8" style={{ color: '#16423c' }}>
               El eslabón entre el agricultor y la ciudad está roto
             </h2>
-            <p className="text-2xl text-left mb-12" style={{ color: '#6a9c89' }}>
-              Los productores están atrapados en un ciclo de ineficiencia y bajos ingresos que amenaza la seguridad alimentaria del país.
-            </p>
             
-            <div className="space-y-6">
-              {/* Pobreza Rural */}
-              <div className="space-y-2">
-                <div className="flex justify-between items-center">
-                  <h3 className="text-2xl font-bold" style={{ color: '#16423c' }}>Pobreza Rural</h3>
-                  <span className="text-4xl font-black" style={{ color: '#ff751f' }}>73.4%</span>
-                </div>
-                <div className="w-full bg-gray-200 rounded-full h-8">
-                  <div 
-                    className="h-8 rounded-full" 
-                    style={{ 
-                      width: '73.4%', 
-                      backgroundColor: '#ff751f' 
-                    }}
-                  >
+            <div className="flex-1 grid grid-cols-1 lg:grid-cols-2 gap-8">
+              {/* Texto descriptivo */}
+              <div className="space-y-4 flex flex-col justify-center">
+                <p className="text-xl text-left" style={{ color: '#6a9c89' }}>
+                  La gran mayoría de los productores del país tienen mucha dificultad para llevar sus productos a las grandes ciudades. De hecho, una gran parte de ellos no tienen siquiera las herramientas logísticas para poder hacerlo.
+                </p>
+                <p className="text-lg text-left" style={{ color: '#6a9c89' }}>
+                  Lo que denota en los siguientes estudios realizados por la ENCOVI (Encuesta Nacional de Condiciones de Vida)
+                </p>
+                <div className="space-y-3">
+                  <p className="text-lg font-semibold text-left" style={{ color: '#16423c' }}>
+                    Los proveedores actuales enfrentan esta situación con dos estrategias limitadas:
+                  </p>
+                  <div className="space-y-2">
+                    <p className="text-base text-left" style={{ color: '#6a9c89' }}>
+                      <span className="font-semibold" style={{ color: '#16423c' }}>Proveedores con transporte:</span> Asumen viajes extensos y costos logísticos significativos. Afrontan incertidumbre sobre la venta total y pagan tarifas adicionales (como en el Mercado de Coche), sin eliminar el problema de la alta merma de productos.
+                    </p>
+                    <p className="text-base text-left" style={{ color: '#6a9c89' }}>
+                      <span className="font-semibold" style={{ color: '#16423c' }}>Proveedores sin transporte:</span> Ven su operación restringida únicamente a su mercado local.
+                    </p>
                   </div>
                 </div>
-                <p className="text-lg" style={{ color: '#6a9c89' }}>
-                  de los hogares agrícolas viven en pobreza • ENCOVI 2023
-                </p>
               </div>
-
-              {/* Inseguridad Alimentaria */}
-              <div className="space-y-2">
-                <div className="flex justify-between items-center">
-                  <h3 className="text-2xl font-bold" style={{ color: '#16423c' }}>Inseguridad Alimentaria</h3>
-                  <span className="text-4xl font-black" style={{ color: '#6a9c89' }}>89%</span>
-                </div>
-                <div className="w-full bg-gray-200 rounded-full h-8">
-                  <div 
-                    className="h-8 rounded-full" 
-                    style={{ 
-                      width: '89%', 
-                      backgroundColor: '#6a9c89' 
-                    }}
-                  >
+              
+              {/* Estadísticas */}
+              <div className="space-y-5 flex flex-col justify-center">
+                {/* Pobreza Rural */}
+                <div className="space-y-2">
+                  <div className="flex justify-between items-center">
+                    <h3 className="text-2xl font-bold" style={{ color: '#16423c' }}>Pobreza Rural</h3>
+                    <span className="text-4xl font-black" style={{ color: '#ff751f' }}>73.4%</span>
                   </div>
-                </div>
-                <p className="text-lg" style={{ color: '#6a9c89' }}>
-                  de hogares en Venezuela sufren inseguridad alimentaria • ENCOVI 2023
-                </p>
-              </div>
-
-              {/* Pérdida de Producción */}
-              <div className="space-y-2">
-                <div className="flex justify-between items-center">
-                  <h3 className="text-2xl font-bold" style={{ color: '#16423c' }}>Pérdida de Producción</h3>
-                  <span className="text-4xl font-black" style={{ color: '#16423c' }}>40%</span>
-                </div>
-                <div className="w-full bg-gray-200 rounded-full h-8">
-                  <div 
-                    className="h-8 rounded-full" 
-                    style={{ 
-                      width: '40%', 
-                      backgroundColor: '#16423c' 
-                    }}
-                  >
+                  <div className="w-full bg-gray-200 rounded-full h-8">
+                    <div 
+                      className="h-8 rounded-full" 
+                      style={{ 
+                        width: '73.4%', 
+                        backgroundColor: '#ff751f' 
+                      }}
+                    >
+                    </div>
                   </div>
+                  <p className="text-base" style={{ color: '#6a9c89' }}>
+                    de los hogares agrícolas viven en pobreza • ENCOVI 2023
+                  </p>
                 </div>
-                <p className="text-lg" style={{ color: '#6a9c89' }}>
-                  de la producción se pierde antes de llegar al consumidor • Estimado FAO
-                </p>
+
+                {/* Inseguridad Alimentaria */}
+                <div className="space-y-2">
+                  <div className="flex justify-between items-center">
+                    <h3 className="text-2xl font-bold" style={{ color: '#16423c' }}>Inseguridad Alimentaria</h3>
+                    <span className="text-4xl font-black" style={{ color: '#6a9c89' }}>89%</span>
+                  </div>
+                  <div className="w-full bg-gray-200 rounded-full h-8">
+                    <div 
+                      className="h-8 rounded-full" 
+                      style={{ 
+                        width: '89%', 
+                        backgroundColor: '#6a9c89' 
+                      }}
+                    >
+                    </div>
+                  </div>
+                  <p className="text-base" style={{ color: '#6a9c89' }}>
+                    de hogares en Venezuela sufren inseguridad alimentaria • ENCOVI 2023
+                  </p>
+                </div>
+
+                {/* Pérdida de Producción */}
+                <div className="space-y-2">
+                  <div className="flex justify-between items-center">
+                    <h3 className="text-2xl font-bold" style={{ color: '#16423c' }}>Pérdida de Producción</h3>
+                    <span className="text-4xl font-black" style={{ color: '#16423c' }}>40%</span>
+                  </div>
+                  <div className="w-full bg-gray-200 rounded-full h-8">
+                    <div 
+                      className="h-8 rounded-full" 
+                      style={{ 
+                        width: '40%', 
+                        backgroundColor: '#16423c' 
+                      }}
+                    >
+                    </div>
+                  </div>
+                  <p className="text-base" style={{ color: '#6a9c89' }}>
+                    de la producción se pierde antes de llegar al consumidor • Estimado FAO
+                  </p>
+                </div>
               </div>
             </div>
           </div>
@@ -137,10 +160,10 @@ const PitchDeck = () => {
             </p>
             
             <div className="flex">
-              {/* Contenido compactado a la izquierda */}
-              <div className="w-2/5 pr-4">
-                <div className="space-y-6">
-                  <h3 className="text-2xl font-bold mb-6" style={{ color: '#16423c' }}>Nuestro Proceso</h3>
+                      {/* Contenido compactado a la izquierda */}
+                      <div className="w-2/5 pr-4">
+                        <div className="space-y-6 -mt-8">
+                          <h3 className="text-2xl font-bold mb-6" style={{ color: '#16423c' }}>Nuestro Proceso</h3>
                   
                   {/* Paso 1: Marketplace */}
                   <div className="relative">
@@ -150,9 +173,9 @@ const PitchDeck = () => {
                       </div>
                       <h4 className="text-xl font-bold" style={{ color: '#16423c' }}>Marketplace Inteligente</h4>
                     </div>
-                    <p className="text-base leading-relaxed ml-13" style={{ color: '#6a9c89' }}>
-                      Los productores publican sus cosechas y nuestra IA sugiere precios justos.
-                    </p>
+                            <p className="text-base leading-relaxed ml-13" style={{ color: '#6a9c89' }}>
+                              Los productores publican sus productos, dándoles visibilidad masiva a nivel nacional.
+                            </p>
                   </div>
 
                   {/* Paso 2: Logística Consolidada */}
@@ -163,9 +186,9 @@ const PitchDeck = () => {
                       </div>
                       <h4 className="text-xl font-bold" style={{ color: '#16423c' }}>Logística Optimizada</h4>
                     </div>
-                    <p className="text-base leading-relaxed ml-13" style={{ color: '#6a9c89' }}>
-                      Consolidamos múltiples pedidos en rutas eficientes, reduciendo costos.
-                    </p>
+                            <p className="text-base leading-relaxed ml-13" style={{ color: '#6a9c89' }}>
+                              Creamos una ruta de recogida para buscar los productos en el campo. Estos son llevados a nuestro cross docking, y de ahí la entrega hacia sus compradores será manejada por Yummy.
+                            </p>
                   </div>
 
                   {/* Paso 3: Hub Cross-Docking */}
@@ -176,28 +199,28 @@ const PitchDeck = () => {
                       </div>
                       <h4 className="text-xl font-bold" style={{ color: '#16423c' }}>Control de Calidad</h4>
                     </div>
-                    <p className="text-base leading-relaxed ml-13" style={{ color: '#6a9c89' }}>
-                      Inspección garantizada, reduciendo la merma a casi cero.
-                    </p>
+                            <p className="text-base leading-relaxed ml-13" style={{ color: '#6a9c89' }}>
+                              Inspeccionamos cada producto para garantizar calidad. Cualquier producto que no sea apto para consumo humano, será reutilizado en nuestro portal KANEY Sustentable, reduciendo así la merma.
+                            </p>
                   </div>
                 </div>
               </div>
 
-              {/* Imágenes de las apps móviles */}
-              <div className="w-3/5 flex items-center justify-end space-x-2">
-                {/* Imagen principal (marketplace) */}
-                <img 
-                  src="/src/assets/kaney_phone.png" 
-                  alt="App KANEY - Interfaz móvil" 
-                  className="w-96 h-auto rounded-2xl mr-12"
-                />
-                {/* Imagen secundaria (provider) */}
-                <img 
-                  src="/src/assets/kaney_provider_phone.png" 
-                  alt="App KANEY Provider - Interfaz móvil" 
-                  className="w-80 h-auto rounded-2xl opacity-80 -mt-8 ml-12"
-                />
-              </div>
+                      {/* Imágenes de las apps móviles */}
+                      <div className="w-3/5 flex items-center justify-end space-x-2">
+                        {/* Imagen principal (marketplace) */}
+                        <img 
+                          src="/src/assets/kaney_phone.png" 
+                          alt="App KANEY - Interfaz móvil" 
+                          className="w-64 h-auto rounded-2xl mr-8"
+                        />
+                        {/* Imagen secundaria (provider) */}
+                        <img 
+                          src="/src/assets/kaney_provider_phone.png" 
+                          alt="App KANEY Provider - Interfaz móvil" 
+                          className="w-64 h-auto rounded-2xl opacity-80 -mt-6 ml-8"
+                        />
+                      </div>
             </div>
           </div>
         </div>
@@ -206,6 +229,69 @@ const PitchDeck = () => {
     },
     {
       id: 5,
+      title: "Equipo",
+      content: (
+        <div className="h-full flex flex-col">
+          <div className="max-w-6xl mx-auto px-8 py-8">
+            <h2 className="text-5xl font-bold text-left mb-8" style={{ color: '#16423c' }}>
+              Nuestro Equipo
+            </h2>
+            
+            <div className="flex justify-center items-center h-full">
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-16 w-full max-w-5xl">
+                {/* Natasha Salcedo */}
+                <div className="text-center">
+                  <div className="w-56 h-56 mx-auto mb-8 rounded-full bg-gradient-to-br from-[#e9efec] to-[#c4dad2] flex items-center justify-center shadow-xl">
+                    <div className="w-52 h-52 rounded-full bg-gray-200 flex items-center justify-center">
+                      <span className="text-5xl text-gray-400">📷</span>
+                    </div>
+                  </div>
+                  <h3 className="text-2xl font-bold mb-3" style={{ color: '#16423c' }}>
+                    Natasha Salcedo
+                  </h3>
+                  <p className="text-lg" style={{ color: '#6a9c89' }}>
+                    Frontend Dev.
+                  </p>
+                </div>
+
+                {/* Raymond Medina */}
+                <div className="text-center">
+                  <div className="w-56 h-56 mx-auto mb-8 rounded-full bg-gradient-to-br from-[#e9efec] to-[#c4dad2] flex items-center justify-center shadow-xl">
+                    <div className="w-52 h-52 rounded-full bg-gray-200 flex items-center justify-center">
+                      <span className="text-5xl text-gray-400">📷</span>
+                    </div>
+                  </div>
+                  <h3 className="text-2xl font-bold mb-3" style={{ color: '#16423c' }}>
+                    Raymond Medina
+                  </h3>
+                  <p className="text-lg" style={{ color: '#6a9c89' }}>
+                    Full-Stack Dev.
+                  </p>
+                </div>
+
+                {/* Claudio Machado */}
+                <div className="text-center">
+                  <div className="w-56 h-56 mx-auto mb-8 rounded-full bg-gradient-to-br from-[#e9efec] to-[#c4dad2] flex items-center justify-center shadow-xl">
+                    <div className="w-52 h-52 rounded-full bg-gray-200 flex items-center justify-center">
+                      <span className="text-5xl text-gray-400">📷</span>
+                    </div>
+                  </div>
+                  <h3 className="text-2xl font-bold mb-3" style={{ color: '#16423c' }}>
+                    Claudio Machado
+                  </h3>
+                  <p className="text-lg" style={{ color: '#6a9c89' }}>
+                    Frontend Dev.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      ),
+      background: "bg-gradient-to-br from-[#e9efec] to-[#c4dad2]"
+    },
+    {
+      id: 6,
       title: "Mercado",
       content: (
         <div className="h-full flex flex-col">
@@ -215,7 +301,7 @@ const PitchDeck = () => {
             </h2>
             
             <div className="space-y-12">
-              <h3 className="text-3xl font-bold text-center mb-12" style={{ color: '#16423c' }}>
+              <h3 className="text-3xl font-bold text-left mb-12" style={{ color: '#16423c' }}>
                 La Nueva Estimación del Mercado (Frutas y Vegetales)
               </h3>
               
@@ -278,7 +364,7 @@ const PitchDeck = () => {
       background: "bg-gradient-to-br from-[#e9efec] to-[#c4dad2]"
     },
     {
-      id: 6,
+      id: 7,
       title: "Modelo de Negocio",
       content: (
         <div className="h-full flex flex-col">
@@ -294,15 +380,15 @@ const PitchDeck = () => {
               {/* Comisión Central */}
               <div className="text-center mb-4">
                 <h3 className="text-xl font-bold mb-3" style={{ color: '#16423c' }}>Comisión Central</h3>
-                <div className="bg-white/70 backdrop-blur-sm rounded-2xl p-4 shadow-xl border-l-4" style={{ borderLeftColor: '#ff751f' }}>
-                  <p className="text-3xl font-bold mb-1" style={{ color: '#ff751f' }}>12%</p>
-                  <p className="text-sm" style={{ color: '#16423c' }}>
-                    Sobre el valor total (GMV) de cada venta exitosa a través de la plataforma
-                  </p>
-                  <p className="text-xs mt-1" style={{ color: '#6a9c89' }}>
-                    Sin costos ocultos
-                  </p>
-                </div>
+                        <div className="bg-white/70 backdrop-blur-sm rounded-2xl p-4 shadow-xl border-l-4" style={{ borderLeftColor: '#ff751f' }}>
+                          <p className="text-3xl font-bold mb-1" style={{ color: '#ff751f' }}>12% + Logística</p>
+                          <p className="text-sm" style={{ color: '#16423c' }}>
+                            Sobre el valor total (GMV) de cada venta exitosa a través de la plataforma
+                          </p>
+                          <p className="text-xs mt-1" style={{ color: '#6a9c89' }}>
+                            Sin costos ocultos
+                          </p>
+                        </div>
               </div>
 
               {/* Economía de un Pedido Promedio */}
@@ -338,7 +424,71 @@ const PitchDeck = () => {
       background: "bg-gradient-to-br from-[#e9efec] to-[#c4dad2]"
     },
     {
-      id: 7,
+      id: 8,
+      title: "Competencia",
+      content: (
+        <div className="h-full flex flex-col">
+          <div className="max-w-6xl mx-auto px-8 py-8">
+            <h2 className="text-5xl font-bold text-left mb-8" style={{ color: '#16423c' }}>
+              Nuestra Competencia es un Sistema Roto
+            </h2>
+            <p className="text-xl text-left mb-12" style={{ color: '#6a9c89' }}>
+              No competimos con otras apps. Competimos contra la anarquía. Nuestro foso es la confianza.
+            </p>
+            
+            <div className="space-y-8">
+              {/* Diferenciación #1 */}
+              <div className="bg-white/70 backdrop-blur-sm rounded-2xl p-6 shadow-xl border-l-4" style={{ borderLeftColor: '#ff751f' }}>
+                <div className="flex items-start space-x-4">
+                  <div className="w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0" style={{ backgroundColor: '#ff751f' }}>
+                    <span className="text-white text-lg font-bold">1</span>
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-bold mb-3" style={{ color: '#16423c' }}>Confianza</h3>
+                    <p className="text-base leading-relaxed" style={{ color: '#6a9c89' }}>
+                      Mientras el sistema actual se basa en el miedo y la extorsión, nosotros construimos una plataforma basada en la transparencia y la seguridad contractual.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Diferenciación #2 */}
+              <div className="bg-white/70 backdrop-blur-sm rounded-2xl p-6 shadow-xl border-l-4" style={{ borderLeftColor: '#6a9c89' }}>
+                <div className="flex items-start space-x-4">
+                  <div className="w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0" style={{ backgroundColor: '#6a9c89' }}>
+                    <span className="text-white text-lg font-bold">2</span>
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-bold mb-3" style={{ color: '#16423c' }}>Logística Integrada</h3>
+                    <p className="text-base leading-relaxed" style={{ color: '#6a9c89' }}>
+                      Nadie más puede ofrecer una solución de punta a punta porque no tienen las alianzas ni la tecnología para gestionar la complejidad del terreno.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Diferenciación #3 */}
+              <div className="bg-white/70 backdrop-blur-sm rounded-2xl p-6 shadow-xl border-l-4" style={{ borderLeftColor: '#c4dad2' }}>
+                <div className="flex items-start space-x-4">
+                  <div className="w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0" style={{ backgroundColor: '#c4dad2' }}>
+                    <span className="text-lg font-bold" style={{ color: '#16423c' }}>3</span>
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-bold mb-3" style={{ color: '#16423c' }}>Ecosistema Sostenible</h3>
+                    <p className="text-base leading-relaxed" style={{ color: '#6a9c89' }}>
+                      Nuestro programa "KANEY Sustentable" es una prueba de nuestra visión a largo plazo, transformando una debilidad sistémica en una fortaleza.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      ),
+      background: "bg-gradient-to-br from-[#e9efec] to-[#c4dad2]"
+    },
+    {
+      id: 9,
       title: "Roadmap",
       content: (
         <div className="h-full flex flex-col">
@@ -408,7 +558,7 @@ const PitchDeck = () => {
       background: "bg-gradient-to-br from-[#e9efec] to-[#c4dad2]"
     },
     {
-      id: 8,
+      id: 9,
       title: "La Petición",
       content: (
         <div className="h-full flex flex-col">
