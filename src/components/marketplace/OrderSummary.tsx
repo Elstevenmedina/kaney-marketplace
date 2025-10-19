@@ -1,11 +1,9 @@
-import { ShoppingCart, Truck } from 'lucide-react';
+import { ShoppingCart, Truck, CreditCard, Calendar } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
 import { ExchangeRateDisplay } from './ExchangeRateDisplay';
-import { BCVRateInfo } from './BCVRateInfo';
-import { BCVConnectionStatus } from './BCVConnectionStatus';
 
 interface OrderSummaryProps {
   subtotal: number;
@@ -30,7 +28,7 @@ export const OrderSummary = ({
   loading,
   itemCount
 }: OrderSummaryProps) => {
-  const freeShippingThreshold = currency === 'USD' ? 100 : 3600;
+  const freeShippingThreshold = currency === 'USD' ? 400 : 3600;
   const isFreeShipping = subtotal >= freeShippingThreshold;
   const remainingForFreeShipping = freeShippingThreshold - subtotal;
 
@@ -86,17 +84,10 @@ export const OrderSummary = ({
           <div className="flex justify-between text-sm">
             <span className="text-muted-foreground flex items-center gap-1">
               <Truck className="h-3 w-3" />
-              Logística estimada
+              Logística
             </span>
-            <span className={`font-medium ${isFreeShipping ? 'line-through text-muted-foreground' : ''}`}>
-              {currency === 'USD' ? '$' : 'Bs.'} {logisticsEstimate.toFixed(2)}
-            </span>
-          </div>
-
-          <div className="flex justify-between text-sm">
-            <span className="text-muted-foreground">IVA (13%)</span>
-            <span className="font-medium">
-              {currency === 'USD' ? '$' : 'Bs.'} {tax.toFixed(2)}
+            <span className="font-medium text-muted-foreground">
+              Por calcular
             </span>
           </div>
 
@@ -122,19 +113,8 @@ export const OrderSummary = ({
           Proceder al Checkout
         </Button>
 
-        {/* BCV Rate Info */}
-        {currency === 'BS' && (
-          <div className="pt-2 space-y-3">
-            <BCVRateInfo />
-            <BCVConnectionStatus />
-          </div>
-        )}
 
-        {/* Additional Info */}
-        <div className="text-xs text-muted-foreground text-center space-y-1">
-          <p>Impuestos calculados en el checkout</p>
-          <p>Envío gratis en compras mayores a {currency === 'USD' ? '$100' : 'Bs.3600'}</p>
-        </div>
+     
       </CardContent>
     </Card>
   );

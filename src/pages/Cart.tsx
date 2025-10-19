@@ -36,23 +36,17 @@ const Cart = () => {
     const freeShippingThreshold = currency === 'USD' ? 100 : 3600;
     const finalLogistics = subtotal >= freeShippingThreshold ? 0 : logistics;
     
-    // Tax calculation (13% IVA on subtotal + logistics)
-    const taxRate = 0.13;
-    const tax = (subtotal + finalLogistics) * taxRate;
-    
-    // Total
-    const total = subtotal + finalLogistics + tax;
+    // Total (no tax calculation)
+    const total = subtotal + finalLogistics;
 
     // Convert to selected currency
     const displaySubtotal = currency === 'BS' ? subtotal * exchangeRate : subtotal;
     const displayLogistics = currency === 'BS' ? finalLogistics * exchangeRate : finalLogistics;
-    const displayTax = currency === 'BS' ? tax * exchangeRate : tax;
     const displayTotal = currency === 'BS' ? total * exchangeRate : total;
 
     return {
       subtotal: displaySubtotal,
       logistics: displayLogistics,
-      tax: displayTax,
       total: displayTotal,
     };
   }, [cartItems, currency, exchangeRate]);
@@ -175,7 +169,7 @@ const Cart = () => {
             <OrderSummary
               subtotal={calculations.subtotal}
               logisticsEstimate={calculations.logistics}
-              tax={calculations.tax}
+              tax={0}
               total={calculations.total}
               currency={currency}
               onCheckout={handleCheckout}

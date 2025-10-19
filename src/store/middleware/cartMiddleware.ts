@@ -7,8 +7,8 @@ import { Middleware, AnyAction } from '@reduxjs/toolkit';
 export const cartMiddleware: Middleware = (store) => (next) => (action: AnyAction) => {
   const result = next(action);
   
-  // Save cart to localStorage when cart actions are dispatched
-  if (action.type?.startsWith('cart/')) {
+  // Save cart to localStorage when cart actions are dispatched, except for clearCart
+  if (action.type?.startsWith('cart/') && action.type !== 'cart/clearCart') {
     const state = store.getState() as any;
     
     try {

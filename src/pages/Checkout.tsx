@@ -47,6 +47,34 @@ export default function Checkout() {
     }
   }, [cartItems, navigate, orderCompleted]);
 
+  // Calculate shipping based on delivery location
+  const calculateShipping = (deliveryInfo: any) => {
+    if (!deliveryInfo?.coordinates) {
+      // Default shipping if no location selected
+      const totalWeight = cartItems.reduce((sum, item) => sum + item.quantity, 0);
+      const baseLogistics = 3.0;
+      const weightCost = totalWeight * 0.5;
+      return baseLogistics + weightCost;
+    }
+
+    // Calculate distance from warehouse (Caracas center)
+    const warehouseCoords = { lat: 10.4806, lng: -66.9036 };
+    const deliveryCoords = deliveryInfo.coordinates;
+    
+    // Simple distance calculation (Haversine formula would be more accurate)
+    const latDiff = Math.abs(deliveryCoords.lat - warehouseCoords.lat);
+    const lngDiff = Math.abs(deliveryCoords.lng - warehouseCoords.lng);
+    const distance = Math.sqrt(latDiff * latDiff + lngDiff * lngDiff) * 111; // Rough km conversion
+    
+    // Calculate shipping based on distance and weight
+    const totalWeight = cartItems.reduce((sum, item) => sum + item.quantity, 0);
+    const baseRate = 2.0;
+    const distanceRate = Math.min(distance * 0.5, 10); // Max $10 for distance
+    const weightRate = totalWeight * 0.3;
+    
+    return baseRate + distanceRate + weightRate;
+  };
+
   // Calculate order summary
   const orderSummary = {
     subtotal: cartItems.reduce((sum, item) => {
@@ -54,19 +82,15 @@ export default function Checkout() {
       return sum + (price * item.quantity);
     }, 0),
     get logistics() {
-      const totalWeight = cartItems.reduce((sum, item) => sum + item.quantity, 0);
-      const baseLogistics = 2.5;
-      const weightCost = totalWeight * 0.5;
-      const volumeDiscount = totalWeight > 50 ? 0.8 : 1.0;
-      const logistics = (baseLogistics + weightCost) * volumeDiscount;
+      const shipping = calculateShipping(deliveryInfo);
       const freeShippingThreshold = currency === 'USD' ? 100 : 3600;
-      return this.subtotal >= freeShippingThreshold ? 0 : logistics;
+      return this.subtotal >= freeShippingThreshold ? 0 : shipping;
     },
     get tax() {
-      return (this.subtotal + this.logistics) * 0.13;
+      return 0; // IVA eliminado
     },
     get total() {
-      return this.subtotal + this.logistics + this.tax;
+      return this.subtotal + this.logistics; // Sin IVA
     },
     currency,
     itemCount: cartItems.length,
@@ -117,7 +141,7 @@ export default function Checkout() {
 
   const handleBackToMarketplace = () => {
     dispatch(resetCheckout());
-    navigate('/marketplace');
+    navigate('/');
   };
 
   const handleGoBack = () => {
@@ -164,19 +188,13 @@ export default function Checkout() {
 
               <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 pt-4 sm:pt-6">
                 <Button
-                  variant="outline"
+                  variant="accent"
                   className="flex-1"
                   onClick={handleBackToMarketplace}
                 >
                   Volver al Marketplace
                 </Button>
-                <Button
-                  variant="accent"
-                  className="flex-1"
-                  onClick={() => navigate('/profile/orders')}
-                >
-                  Ver Mis Pedidos
-                </Button>
+                
               </div>
             </div>
           </CardContent>
@@ -247,6 +265,7 @@ export default function Checkout() {
           {currentStep === 3 && (
             <PaymentForm
               orderSummary={displaySummary}
+              deliveryInfo={deliveryInfo}
               onComplete={handlePaymentComplete}
               onBack={() => dispatch(setCurrentStep(2))}
             />

@@ -1,8 +1,7 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { z } from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { MapContainer, TileLayer, Marker, useMapEvents, Popup } from 'react-leaflet';
 import { MapPin, Clock, User, MessageSquare, Navigation, RefreshCw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -11,23 +10,13 @@ import { Textarea } from '@/components/ui/textarea';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import 'leaflet/dist/leaflet.css';
-import L from 'leaflet';
-
-// Fix Leaflet icon issue
-delete (L.Icon.Default.prototype as any)._getIconUrl;
-L.Icon.Default.mergeOptions({
-  iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png',
-  iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png',
-  shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
-});
+import { getGoogleMapsApiKey, GOOGLE_MAPS_CONFIG, createCustomMarker } from '@/config/google-maps';
 
 const deliverySchema = z.object({
   address: z.string().min(10, 'La dirección debe tener al menos 10 caracteres').max(200),
   recipientName: z.string().min(3, 'El nombre debe tener al menos 3 caracteres').max(100),
   recipientPhone: z.string().min(10, 'El teléfono debe tener al menos 10 dígitos').max(15),
   deliveryTime: z.enum(['morning', 'afternoon', 'evening']),
-  deliveryType: z.enum(['standard', 'express', 'scheduled']),
   specialInstructions: z.string().max(500).optional(),
 });
 
@@ -40,22 +29,17 @@ interface DeliveryFormProps {
   loading?: boolean;
 }
 
-// Map click handler component
-function LocationMarker({ position, setPosition }: any) {
-  useMapEvents({
-    click(e) {
-      setPosition(e.latlng);
-    },
-  });
-
-  return position === null ? null : <Marker position={position} />;
-}
-
 export const DeliveryForm = ({ onNext, onBack, initialData, loading }: DeliveryFormProps) => {
   const [coordinates, setCoordinates] = useState<{ lat: number; lng: number }>(
-    initialData?.coordinates || { lat: 10.4806, lng: -66.9036 } // Caracas, Venezuela
+    initialData?.coordinates || GOOGLE_MAPS_CONFIG.DEFAULT_CENTER
   );
   const [isGettingLocation, setIsGettingLocation] = useState(false);
+  const [isGeocoding, setIsGeocoding] = useState(false);
+  const [mapLoaded, setMapLoaded] = useState(false);
+  const [mapError, setMapError] = useState<string | null>(null);
+  const mapRef = useRef<HTMLDivElement>(null);
+  const googleMapRef = useRef<google.maps.Map | null>(null);
+  const markerRef = useRef<google.maps.Marker | null>(null);
 
   const form = useForm<DeliveryFormData>({
     resolver: zodResolver(deliverySchema),
@@ -64,7 +48,6 @@ export const DeliveryForm = ({ onNext, onBack, initialData, loading }: DeliveryF
       recipientName: initialData?.recipientName || '',
       recipientPhone: initialData?.recipientPhone || '',
       deliveryTime: initialData?.deliveryTime || 'morning',
-      deliveryType: initialData?.deliveryType || 'standard',
       specialInstructions: initialData?.specialInstructions || '',
     },
   });
@@ -72,6 +55,103 @@ export const DeliveryForm = ({ onNext, onBack, initialData, loading }: DeliveryF
   const onSubmit = (data: DeliveryFormData) => {
     onNext({ ...data, coordinates });
   };
+
+  // Función para cargar Google Maps
+  const loadGoogleMaps = useCallback(() => {
+    if (mapLoaded || !mapRef.current) return;
+
+    const apiKey = getGoogleMapsApiKey();
+    if (!apiKey) {
+      setMapError("API Key de Google Maps no configurada");
+      return;
+    }
+
+    // Función para inicializar el mapa de Google
+    const initializeMap = () => {
+      if (!mapRef.current || !window.google) return;
+
+      try {
+        const map = new google.maps.Map(mapRef.current, {
+          center: { lat: coordinates.lat, lng: coordinates.lng },
+          zoom: GOOGLE_MAPS_CONFIG.DEFAULT_ZOOM,
+          mapTypeId: google.maps.MapTypeId.ROADMAP,
+        });
+
+        // Crear marcador personalizado arrastrable usando la configuración
+        const marker = new google.maps.Marker({
+          position: { lat: coordinates.lat, lng: coordinates.lng },
+          map: map,
+          icon: createCustomMarker(
+            GOOGLE_MAPS_CONFIG.MARKERS.DELIVERY.COLOR,
+            GOOGLE_MAPS_CONFIG.MARKERS.DELIVERY.ICON
+          ),
+          title: GOOGLE_MAPS_CONFIG.MARKERS.DELIVERY.TITLE,
+          draggable: true
+        });
+
+        // Actualizar coordenadas cuando se arrastra el marcador
+        marker.addListener('dragend', () => {
+          const position = marker.getPosition();
+          if (position) {
+            const newCoords = {
+              lat: position.lat(),
+              lng: position.lng()
+            };
+            setCoordinates(newCoords);
+          }
+        });
+
+        // Actualizar coordenadas cuando se hace clic en el mapa
+        map.addListener('click', (event: google.maps.MapMouseEvent) => {
+          if (event.latLng) {
+            const newCoords = {
+              lat: event.latLng.lat(),
+              lng: event.latLng.lng()
+            };
+            setCoordinates(newCoords);
+            marker.setPosition(event.latLng);
+          }
+        });
+
+        googleMapRef.current = map;
+        markerRef.current = marker;
+        setMapLoaded(true);
+        setMapError(null);
+      } catch (error) {
+        console.error('Error al inicializar el mapa:', error);
+        setMapError("Error al inicializar el mapa");
+      }
+    };
+
+    // Cargar el script de Google Maps si no está cargado
+    if (!window.google) {
+      const script = document.createElement('script');
+      script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=places`;
+      script.async = true;
+      script.defer = true;
+      script.onload = initializeMap;
+      script.onerror = () => {
+        setMapError("Error al cargar Google Maps");
+      };
+      document.head.appendChild(script);
+    } else {
+      initializeMap();
+    }
+  }, [mapLoaded, coordinates.lat, coordinates.lng]);
+
+  // Cargar el mapa cuando el componente se monta
+  useEffect(() => {
+    loadGoogleMaps();
+  }, [loadGoogleMaps]);
+
+  // Actualizar marcador cuando cambien las coordenadas
+  useEffect(() => {
+    if (markerRef.current && googleMapRef.current) {
+      const newPosition = new google.maps.LatLng(coordinates.lat, coordinates.lng);
+      markerRef.current.setPosition(newPosition);
+      googleMapRef.current.panTo(newPosition);
+    }
+  }, [coordinates]);
 
   const getCurrentLocation = () => {
     if (!navigator.geolocation) {
@@ -95,6 +175,38 @@ export const DeliveryForm = ({ onNext, onBack, initialData, loading }: DeliveryF
         setIsGettingLocation(false);
       }
     );
+  };
+
+  // Función para geocodificar una dirección usando Google Maps
+  const geocodeAddress = async (address: string) => {
+    if (!address.trim() || !window.google) return;
+    
+    setIsGeocoding(true);
+    try {
+      const geocoder = new google.maps.Geocoder();
+      geocoder.geocode(
+        { 
+          address: address + ', Venezuela',
+          region: 'VE'
+        },
+        (results, status) => {
+          if (status === 'OK' && results && results[0]) {
+            const location = results[0].geometry.location;
+            const newCoords = {
+              lat: location.lat(),
+              lng: location.lng()
+            };
+            setCoordinates(newCoords);
+          } else {
+            console.error('Error en geocodificación:', status);
+          }
+          setIsGeocoding(false);
+        }
+      );
+    } catch (error) {
+      console.error('Error en geocodificación:', error);
+      setIsGeocoding(false);
+    }
   };
 
   return (
@@ -124,13 +236,39 @@ export const DeliveryForm = ({ onNext, onBack, initialData, loading }: DeliveryF
                       Dirección de Entrega *
                     </FormLabel>
                     <FormControl>
-                      <Input
-                        placeholder="Calle Principal #123, Zona Central"
-                        {...field}
-                      />
+                      <div className="flex gap-2">
+                        <Input
+                          placeholder="Calle Principal #123, Zona Central"
+                          {...field}
+                          onChange={(e) => {
+                            field.onChange(e);
+                            // Debounce geocoding
+                            const timeoutId = setTimeout(() => {
+                              if (e.target.value.length > 10) {
+                                geocodeAddress(e.target.value);
+                              }
+                            }, 1000);
+                            return () => clearTimeout(timeoutId);
+                          }}
+                        />
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          onClick={() => geocodeAddress(field.value)}
+                          disabled={isGeocoding || !field.value.trim()}
+                          className="px-3"
+                        >
+                          {isGeocoding ? (
+                            <RefreshCw className="h-4 w-4 animate-spin" />
+                          ) : (
+                            <MapPin className="h-4 w-4" />
+                          )}
+                        </Button>
+                      </div>
                     </FormControl>
                     <p className="text-xs text-muted-foreground">
-                      Haz clic en el mapa para marcar la ubicación exacta
+                      Escribe la dirección o haz clic en el mapa para marcar la ubicación exacta
                     </p>
                     <FormMessage />
                   </FormItem>
@@ -254,79 +392,6 @@ export const DeliveryForm = ({ onNext, onBack, initialData, loading }: DeliveryF
                 )}
               />
 
-              {/* Delivery Type */}
-              <FormField
-                control={form.control}
-                name="deliveryType"
-                render={({ field }) => (
-                  <FormItem className="space-y-3">
-                    <FormLabel className="flex items-center gap-2">
-                      <Navigation className="h-4 w-4" />
-                      Tipo de Entrega *
-                    </FormLabel>
-                    <FormControl>
-                      <RadioGroup
-                        onValueChange={field.onChange}
-                        defaultValue={field.value}
-                        className="grid grid-cols-1 gap-3"
-                      >
-                        <div>
-                          <RadioGroupItem
-                            value="standard"
-                            id="standard"
-                            className="peer sr-only"
-                          />
-                          <Label
-                            htmlFor="standard"
-                            className="flex items-center justify-between rounded-md border-2 border-muted bg-transparent p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary cursor-pointer"
-                          >
-                            <div>
-                              <div className="font-semibold">Entrega Estándar</div>
-                              <div className="text-sm text-muted-foreground">24-48 horas • Gratis</div>
-                            </div>
-                            <div className="text-lg">📦</div>
-                          </Label>
-                        </div>
-                        <div>
-                          <RadioGroupItem
-                            value="express"
-                            id="express"
-                            className="peer sr-only"
-                          />
-                          <Label
-                            htmlFor="express"
-                            className="flex items-center justify-between rounded-md border-2 border-muted bg-transparent p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary cursor-pointer"
-                          >
-                            <div>
-                              <div className="font-semibold">Entrega Express</div>
-                              <div className="text-sm text-muted-foreground">2-6 horas • +$5.00</div>
-                            </div>
-                            <div className="text-lg">⚡</div>
-                          </Label>
-                        </div>
-                        <div>
-                          <RadioGroupItem
-                            value="scheduled"
-                            id="scheduled"
-                            className="peer sr-only"
-                          />
-                          <Label
-                            htmlFor="scheduled"
-                            className="flex items-center justify-between rounded-md border-2 border-muted bg-transparent p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary cursor-pointer"
-                          >
-                            <div>
-                              <div className="font-semibold">Entrega Programada</div>
-                              <div className="text-sm text-muted-foreground">Fecha específica • Gratis</div>
-                            </div>
-                            <div className="text-lg">📅</div>
-                          </Label>
-                        </div>
-                      </RadioGroup>
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
 
               {/* Special Instructions */}
               <FormField
@@ -411,33 +476,67 @@ export const DeliveryForm = ({ onNext, onBack, initialData, loading }: DeliveryF
           </div>
         </CardHeader>
         <CardContent className="p-0">
-          <div className="h-[500px] rounded-b-lg overflow-hidden">
-            <MapContainer
-              center={[coordinates.lat, coordinates.lng]}
-              zoom={13}
-              style={{ height: '100%', width: '100%' }}
-            >
-              <TileLayer
-                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-              />
-              <LocationMarker position={coordinates} setPosition={setCoordinates} />
-              {coordinates && (
-                <Marker position={[coordinates.lat, coordinates.lng]}>
-                  <Popup>
-                    <div className="text-center">
-                      <p className="font-semibold">Ubicación de Entrega</p>
-                      <p className="text-sm text-muted-foreground">
-                        Lat: {coordinates.lat.toFixed(4)}
-                      </p>
-                      <p className="text-sm text-muted-foreground">
-                        Lng: {coordinates.lng.toFixed(4)}
-                      </p>
-                    </div>
-                  </Popup>
-                </Marker>
-              )}
-            </MapContainer>
+          <div className="h-[500px] rounded-b-lg overflow-hidden relative">
+            {/* Google Maps */}
+            <div 
+              ref={mapRef}
+              className="w-full h-full rounded-b-lg"
+            />
+            
+            {/* Loading overlay */}
+            {!mapLoaded && !mapError && (
+              <div className="absolute inset-0 bg-gray-100 flex items-center justify-center">
+                <div className="text-center text-gray-500">
+                  <RefreshCw className="w-8 h-8 mx-auto mb-2 animate-spin" />
+                  <p className="text-sm">Cargando Google Maps...</p>
+                </div>
+              </div>
+            )}
+            
+            {/* Error overlay */}
+            {mapError && (
+              <div className="absolute inset-0 bg-gray-100 flex items-center justify-center">
+                <div className="text-center text-red-500">
+                  <MapPin className="w-8 h-8 mx-auto mb-2" />
+                  <p className="text-sm font-medium">Error al cargar el mapa</p>
+                  <p className="text-xs text-gray-500 mt-1">{mapError}</p>
+                </div>
+              </div>
+            )}
+            
+            {/* Overlay con información de coordenadas */}
+            <div className="absolute top-4 right-4 bg-white/90 backdrop-blur-sm rounded-lg p-3 shadow-lg">
+              <div className="text-sm space-y-1">
+                <p className="font-semibold">Ubicación Seleccionada</p>
+                <p className="text-muted-foreground">
+                  Lat: {coordinates.lat.toFixed(4)}
+                </p>
+                <p className="text-muted-foreground">
+                  Lng: {coordinates.lng.toFixed(4)}
+                </p>
+                <p className="text-xs text-blue-600 mt-2">
+                  💡 Arrastra el marcador o haz clic en el mapa
+                </p>
+              </div>
+            </div>
+
+            {/* Botones de control en el mapa */}
+            <div className="absolute bottom-4 left-4 space-y-2">
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={getCurrentLocation}
+                disabled={isGettingLocation}
+                className="bg-white/90 backdrop-blur-sm shadow-lg"
+              >
+                {isGettingLocation ? (
+                  <RefreshCw className="h-4 w-4 animate-spin" />
+                ) : (
+                  <Navigation className="h-4 w-4" />
+                )}
+              </Button>
+            </div>
           </div>
         </CardContent>
       </Card>
