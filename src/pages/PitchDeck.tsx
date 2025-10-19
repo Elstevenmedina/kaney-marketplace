@@ -260,7 +260,6 @@ const PitchDeck = () => {
       title: "Solución",
       content: (
         <div className="h-full flex flex-col">
-<<<<<<< HEAD
           <div className="max-w-7xl mx-auto px-8 py-8">
             <div className="flex items-center justify-between">
               {/* Texto a la izquierda */}
@@ -284,78 +283,6 @@ const PitchDeck = () => {
                   className="w-full h-auto max-w-lg rounded-2xl shadow-xl"
                 />
               </div>
-=======
-          <div className="max-w-6xl mx-auto px-8 py-4">
-            <h2 className="text-4xl font-bold text-left mb-4" style={{ color: '#16423c' }}>
-              Presentamos un Ecosistema B2B Inteligente
-            </h2>
-            <p className="text-xl text-left mb-8" style={{ color: '#6a9c89' }}>
-              <span className="font-bold">KANEY</span> es una plataforma que re-imagina la logística agrícola, haciéndola más rentable, eficiente y confiable.
-            </p>
-            
-            <div className="flex">
-                      {/* Contenido compactado a la izquierda */}
-                      <div className="w-2/5 pr-4">
-                        <div className="space-y-4">
-                          <h3 className="text-xl font-bold mb-4" style={{ color: '#16423c' }}>Nuestro Proceso</h3>
-                  
-                  {/* Paso 1: Marketplace */}
-                  <div className="relative">
-                    <div className="flex items-center mb-2">
-                      <div className="w-10 h-10 rounded-full flex items-center justify-center mr-3" style={{ backgroundColor: '#ff751f' }}>
-                        <span className="text-white text-sm font-bold">1</span>
-                      </div>
-                      <h4 className="text-lg font-bold" style={{ color: '#16423c' }}>Marketplace Inteligente</h4>
-                    </div>
-                            <p className="text-sm leading-relaxed ml-13" style={{ color: '#6a9c89' }}>
-                              Los productores publican sus productos, dándoles visibilidad masiva a nivel nacional.
-                            </p>
-                  </div>
-
-                  {/* Paso 2: Logística Consolidada */}
-                  <div className="relative">
-                    <div className="flex items-center mb-2">
-                      <div className="w-10 h-10 rounded-full flex items-center justify-center mr-3" style={{ backgroundColor: '#6a9c89' }}>
-                        <span className="text-white text-sm font-bold">2</span>
-                      </div>
-                      <h4 className="text-lg font-bold" style={{ color: '#16423c' }}>Logística Optimizada</h4>
-                    </div>
-                            <p className="text-sm leading-relaxed ml-13" style={{ color: '#6a9c89' }}>
-                              Creamos una ruta de recogida para buscar los productos en el campo. Estos son llevados a nuestro cross docking, y de ahí la entrega hacia sus compradores será manejada por Yummy.
-                            </p>
-                  </div>
-
-                  {/* Paso 3: Hub Cross-Docking */}
-                  <div className="relative">
-                    <div className="flex items-center mb-2">
-                      <div className="w-10 h-10 rounded-full flex items-center justify-center mr-3" style={{ backgroundColor: '#c4dad2' }}>
-                        <span className="text-sm font-bold" style={{ color: '#16423c' }}>3</span>
-                      </div>
-                      <h4 className="text-lg font-bold" style={{ color: '#16423c' }}>Control de Calidad</h4>
-                    </div>
-                            <p className="text-sm leading-relaxed ml-13" style={{ color: '#6a9c89' }}>
-                              Inspeccionamos cada producto para garantizar calidad. Cualquier producto que no sea apto para consumo humano, será reutilizado en nuestro portal KANEY Sustentable, reduciendo así la merma.
-                            </p>
-                  </div>
-                </div>
-              </div>
-
-                      {/* Imágenes de las apps móviles */}
-                      <div className="w-3/5 flex items-center justify-end space-x-2">
-                        {/* Imagen principal (marketplace) */}
-                        <img 
-                          src={kaneyPhone} 
-                          alt="App KANEY - Interfaz móvil" 
-                          className="w-64 h-auto rounded-2xl mr-8"
-                        />
-                        {/* Imagen secundaria (provider) */}
-                        <img 
-                          src={kaneyProviderPhone} 
-                          alt="App KANEY Provider - Interfaz móvil" 
-                          className="w-64 h-auto rounded-2xl opacity-80 -mt-6 ml-8"
-                        />
-                      </div>
->>>>>>> 427e0a7a5a0941ee07bdc107f0134d1b1c007da3
             </div>
           </div>
         </div>
@@ -820,13 +747,8 @@ const PitchDeck = () => {
       {/* Información de contacto global */}
       <div className="fixed bottom-12 left-8 z-10">
         <div className="flex space-x-4">
-<<<<<<< HEAD
           <p className="text-sm text-white">www.kaneyconecta.com</p>
           <p className="text-sm text-white">kaney@conecta.com</p>
-=======
-          <p className="text-sm" style={{ color: '#16423c' }}>www.kaneyconecta.com</p>
-          <p className="text-sm" style={{ color: '#16423c' }}>conecta@kaney.com</p>
->>>>>>> 427e0a7a5a0941ee07bdc107f0134d1b1c007da3
         </div>
       </div>
 
