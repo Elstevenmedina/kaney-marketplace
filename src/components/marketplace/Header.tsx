@@ -1,4 +1,4 @@
-import { ShoppingCart, User, Menu, X, Home, Package, Leaf, LogOut } from 'lucide-react';
+import { ShoppingCart, User, Menu, X, Home, Package, Leaf, LogOut, Truck } from 'lucide-react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -73,6 +73,11 @@ export const Header = () => {
     setIsMobileMenuOpen(false);
   };
 
+  const handleTransportistasClick = () => {
+    navigate('/transportistas-certificados');
+    setIsMobileMenuOpen(false);
+  };
+
   const handleHomeClick = () => {
     navigate('/');
     setIsMobileMenuOpen(false);
@@ -91,32 +96,32 @@ export const Header = () => {
   return (
     <header className="sticky top-0 z-50 w-full border-b-2 border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80">
       <div className="container mx-auto px-4 sm:px-6">
-        <div className="flex h-14 sm:h-16 items-center justify-between gap-2 sm:gap-4">
-          {/* Logo and Navigation */}
-          <div className="flex items-center gap-4 sm:gap-8 shrink-0">
+        <div className="flex h-14 sm:h-16 items-center gap-2 sm:gap-4">
+          {/* Logo */}
+          <div className="flex items-center shrink-0">
             <Link to="/" className="flex items-center gap-2">
               <img src={logoDark} alt="Kaney" className="h-6 sm:h-8 lg:h-10" />
             </Link>
-            
-            {/* Navigation Links */}
-            <nav className="hidden lg:flex items-center gap-6 xl:gap-8 mr-4 xl:mr-8">
-              <button 
-                onClick={handleProductosClick}
-                className="text-xs xl:text-sm font-medium text-foreground hover:opacity-70 transition-opacity"
-              >
-                PRODUCTOS
-              </button>
-              <Link 
-                to="/sostenible" 
-                className="text-xs xl:text-sm font-medium text-foreground hover:opacity-70 transition-opacity"
-              >
-                KANEY SOSTENIBLE
-              </Link>
-            </nav>
           </div>
+          
+          {/* Navigation Links */}
+          <nav className="hidden lg:flex items-center gap-6 xl:gap-8">
+            <button 
+              onClick={handleProductosClick}
+              className="text-xs xl:text-sm font-medium text-foreground hover:opacity-70 transition-opacity"
+            >
+              PRODUCTOS
+            </button>
+            <Link 
+              to="/sostenible" 
+              className="text-xs xl:text-sm font-medium text-foreground hover:opacity-70 transition-opacity"
+            >
+              KANEY SOSTENIBLE
+            </Link>
+          </nav>
 
           {/* Search Bar */}
-          <div className="flex-1 max-w-xl hidden md:flex">
+          <div className="flex-1 max-w-xl hidden md:flex mx-4">
             <SearchBar
               onSearch={handleSearch}
               suggestions={searchSuggestions}
@@ -125,8 +130,18 @@ export const Header = () => {
             />
           </div>
 
+          {/* Transportistas Link */}
+          <div className="hidden lg:block">
+            <Link 
+              to="/transportistas-certificados" 
+              className="text-xs xl:text-sm font-medium text-foreground hover:opacity-70 transition-opacity"
+            >
+              TRANSPORTISTAS
+            </Link>
+          </div>
+
           {/* Actions */}
-          <div className="flex items-center gap-1 sm:gap-2 ml-auto">
+          <div className="flex items-center gap-1 sm:gap-2">
             {/* Mobile Menu */}
             <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
               <SheetTrigger asChild>
@@ -167,6 +182,15 @@ export const Header = () => {
                     >
                       <Leaf className="h-4 w-4 mr-3" />
                       <span>Kaney Sostenible</span>
+                    </Button>
+                    
+                    <Button
+                      variant="ghost"
+                      onClick={handleTransportistasClick}
+                      className="w-full justify-start text-left h-auto p-3"
+                    >
+                      <Truck className="h-4 w-4 mr-3" />
+                      <span>Transportistas Certificados</span>
                     </Button>
                   </div>
 

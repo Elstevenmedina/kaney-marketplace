@@ -73,8 +73,8 @@ export const calculateTotals = createAsyncThunk(
       );
       
       const logisticsEstimate = subtotal * 0.10; // 10%
-      const tax = (subtotal + logisticsEstimate) * 0.16; // 16% IVA
-      const total = subtotal + logisticsEstimate + tax;
+      const tax = 0; // IVA eliminado
+      const total = subtotal + logisticsEstimate; // Sin IVA
 
       return {
         subtotal,
@@ -153,6 +153,10 @@ const cartSlice = createSlice({
     },
     toggleCurrency: (state) => {
       state.currency = state.currency === 'USD' ? 'BS' : 'USD';
+      // Usar tasa fija de 205.68 cuando se cambie a BS
+      if (state.currency === 'BS') {
+        state.exchangeRate = 205.68;
+      }
     },
     clearCart: (state) => {
       state.items = [];

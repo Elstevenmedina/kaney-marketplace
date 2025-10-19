@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { logout, updateUser } from '@/store/slices/authSlice';
+import { loadOrdersFromStorage, clearCorruptedOrders } from '@/store/slices/ordersSlice';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -19,15 +20,14 @@ import {
   LogOut, 
   ShoppingBag, 
   MapPin, 
-  CreditCard,
-  HelpCircle,
   CheckCircle,
   Clock,
   X,
-  RefreshCw,
-  AlertTriangle,
   CheckCircle2,
-  XCircle
+  XCircle,
+  Package,
+  Truck,
+  Calendar
 } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -35,24 +35,10 @@ interface UserProfileProps {
   onClose?: () => void;
 }
 
-interface Refund {
-  id: string;
-  orderId: string;
-  amount: number;
-  currency: 'USD' | 'BS';
-  reason: string;
-  status: 'pending' | 'approved' | 'rejected' | 'processed';
-  requestedAt: Date;
-  processedAt?: Date;
-  description: string;
-  evidence?: string[];
-  productName: string;
-  productImage?: string;
-}
-
 export const UserProfile = ({ onClose }: UserProfileProps) => {
   const dispatch = useAppDispatch();
   const { user, kycStatus } = useAppSelector((state) => state.auth);
+  const orders = useAppSelector((state) => state.orders.orders);
   
   const [isEditing, setIsEditing] = useState(false);
   const [editData, setEditData] = useState({
@@ -63,52 +49,28 @@ export const UserProfile = ({ onClose }: UserProfileProps) => {
     businessType: user?.businessType || 'individual'
   });
 
-  // Mock data for refunds
-  const [refunds] = useState<Refund[]>([
-    {
-      id: '1',
-      orderId: 'ORD-2024-001',
-      amount: 2550000,
-      currency: 'BS',
-      reason: 'Producto no apto para consumo',
-      status: 'processed',
-      requestedAt: new Date('2024-01-15'),
-      processedAt: new Date('2024-01-16'),
-      description: 'Tomates con manchas y golpes visibles',
-      evidence: ['evidencia1.jpg', 'evidencia2.jpg'],
-      productName: 'Tomates Frescos',
-      productImage: '/api/placeholder/100/100'
-    },
-    {
-      id: '2',
-      orderId: 'ORD-2024-002',
-      amount: 1875000,
-      currency: 'BS',
-      reason: 'Producto en mal estado',
-      status: 'approved',
-      requestedAt: new Date('2024-01-20'),
-      description: 'Lechugas con hojas marchitas',
-      productName: 'Lechuga Romana',
-      productImage: '/api/placeholder/100/100'
-    },
-    {
-      id: '3',
-      orderId: 'ORD-2024-003',
-      amount: 3200000,
-      currency: 'BS',
-      reason: 'Producto no cumple estándares de calidad',
-      status: 'pending',
-      requestedAt: new Date('2024-01-25'),
-      description: 'Zanahorias con textura blanda',
-      productName: 'Zanahorias Orgánicas',
-      productImage: '/api/placeholder/100/100'
-    }
-  ]);
+  // Cargar órdenes desde localStorage al montar el componente
+  useEffect(() => {
+    console.log('Cargando órdenes desde localStorage...');
+    dispatch(loadOrdersFromStorage());
+  }, [dispatch]);
+
+  // Debug: mostrar órdenes cuando cambien
+  useEffect(() => {
+    console.log('Órdenes en el store:', orders);
+  }, [orders]);
 
   const handleLogout = () => {
     dispatch(logout());
     toast.success('Sesión cerrada');
     onClose?.();
+  };
+
+  const handleClearCorruptedData = () => {
+    if (confirm('¿Estás seguro de que quieres limpiar todos los datos de órdenes? Esta acción no se puede deshacer.')) {
+      dispatch(clearCorruptedOrders());
+      alert('Datos corruptos limpiados exitosamente');
+    }
   };
 
   const handleSave = () => {
@@ -141,27 +103,42 @@ export const UserProfile = ({ onClose }: UserProfileProps) => {
     }
   };
 
-  const getRefundStatusBadge = (status: string) => {
-    switch (status) {
-      case 'processed':
-        return <Badge variant="default" className="bg-green-100 text-green-800"><CheckCircle2 className="h-3 w-3 mr-1" />Procesado</Badge>;
-      case 'approved':
-        return <Badge variant="default" className="bg-blue-100 text-blue-800"><CheckCircle className="h-3 w-3 mr-1" />Aprobado</Badge>;
-      case 'pending':
-        return <Badge variant="secondary"><Clock className="h-3 w-3 mr-1" />Pendiente</Badge>;
-      case 'rejected':
-        return <Badge variant="destructive"><XCircle className="h-3 w-3 mr-1" />Rechazado</Badge>;
-      default:
-        return <Badge variant="outline">Desconocido</Badge>;
+  const formatDate = (date: Date | string) => {
+    try {
+      // Si es string, convertir a Date
+      const dateObj = typeof date === 'string' ? new Date(date) : date;
+      
+      // Verificar si la fecha es válida
+      if (isNaN(dateObj.getTime())) {
+        return 'Fecha inválida';
+      }
+      
+      return new Intl.DateTimeFormat('es-ES', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric'
+      }).format(dateObj);
+    } catch (error) {
+      console.error('Error formatting date:', error);
+      return 'Fecha inválida';
     }
   };
 
-  const formatDate = (date: Date) => {
-    return new Intl.DateTimeFormat('es-ES', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric'
-    }).format(date);
+  const getOrderStatusBadge = (status: string) => {
+    switch (status) {
+      case 'confirmed':
+        return <Badge variant="default" className="bg-green-100 text-green-800"><CheckCircle2 className="h-3 w-3 mr-1" />Confirmado</Badge>;
+      case 'processing':
+        return <Badge variant="secondary"><Clock className="h-3 w-3 mr-1" />Procesando</Badge>;
+      case 'shipped':
+        return <Badge variant="default" className="bg-blue-100 text-blue-800"><Truck className="h-3 w-3 mr-1" />Enviado</Badge>;
+      case 'delivered':
+        return <Badge variant="default" className="bg-green-100 text-green-800"><Package className="h-3 w-3 mr-1" />Entregado</Badge>;
+      case 'cancelled':
+        return <Badge variant="destructive"><XCircle className="h-3 w-3 mr-1" />Cancelado</Badge>;
+      default:
+        return <Badge variant="outline">Pendiente</Badge>;
+    }
   };
 
   return (
@@ -191,7 +168,7 @@ export const UserProfile = ({ onClose }: UserProfileProps) => {
       </CardHeader>
       <CardContent className="pt-0 px-4 sm:px-6">
         <Tabs defaultValue="profile" className="w-full">
-          <TabsList className="grid w-full grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-1 sm:gap-2 h-auto p-1">
+          <TabsList className="grid w-full grid-cols-3 gap-1 sm:gap-2 h-auto p-1">
             <TabsTrigger value="profile" className="text-xs sm:text-sm py-2 sm:py-3">
               <span className="hidden xs:inline">Perfil</span>
               <span className="xs:hidden">Perfil</span>
@@ -203,14 +180,6 @@ export const UserProfile = ({ onClose }: UserProfileProps) => {
             <TabsTrigger value="addresses" className="text-xs sm:text-sm py-2 sm:py-3">
               <span className="hidden xs:inline">Direcciones</span>
               <span className="xs:hidden">Direcciones</span>
-            </TabsTrigger>
-            <TabsTrigger value="refunds" className="text-xs sm:text-sm py-2 sm:py-3">
-              <span className="hidden xs:inline">Reintegros</span>
-              <span className="xs:hidden">Reintegros</span>
-            </TabsTrigger>
-            <TabsTrigger value="support" className="text-xs sm:text-sm py-2 sm:py-3">
-              <span className="hidden xs:inline">Soporte</span>
-              <span className="xs:hidden">Soporte</span>
             </TabsTrigger>
           </TabsList>
           
@@ -351,11 +320,114 @@ export const UserProfile = ({ onClose }: UserProfileProps) => {
           </TabsContent>
           
           <TabsContent value="purchases" className="space-y-4">
-            <div className="text-center py-8">
-              <ShoppingBag className="h-12 w-12 mx-auto mb-4" style={{ color: '#6a9c89' }} />
-              <h3 className="text-lg font-semibold mb-2" style={{ color: '#16423c' }}>Mis Compras</h3>
-              <p className="text-sm" style={{ color: '#6a9c89' }}>Próximamente disponible</p>
+            <div className="flex items-center justify-between">
+              <h3 className="text-base sm:text-lg font-semibold" style={{ color: '#16423c' }}>Mis Compras</h3>
+              <div className="flex items-center gap-2">
+                <span className="text-xs sm:text-sm" style={{ color: '#6a9c89' }}>
+                  {orders.length} {orders.length === 1 ? 'orden' : 'órdenes'}
+                </span>
+                {orders.length > 0 && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={handleClearCorruptedData}
+                    className="text-xs"
+                  >
+                    Limpiar datos
+                  </Button>
+                )}
+              </div>
             </div>
+            
+            {orders.length === 0 ? (
+              <div className="text-center py-8">
+                <ShoppingBag className="h-12 w-12 mx-auto mb-4" style={{ color: '#6a9c89' }} />
+                <h3 className="text-lg font-semibold mb-2" style={{ color: '#16423c' }}>No hay órdenes</h3>
+                <p className="text-sm" style={{ color: '#6a9c89' }}>Aún no has realizado ninguna compra</p>
+              </div>
+            ) : (
+              <div className="space-y-3 sm:space-y-4">
+                {orders.map((order) => (
+                  <Card key={order.id} className="p-3 sm:p-4" style={{ backgroundColor: '#e9efec' }}>
+                    <div className="space-y-3">
+                      {/* Order Header */}
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                        <div className="flex items-center gap-2">
+                          <Calendar className="h-4 w-4" style={{ color: '#6a9c89' }} />
+                          <span className="font-semibold text-sm sm:text-base" style={{ color: '#16423c' }}>
+                            {order.orderNumber}
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          {getOrderStatusBadge(order.status)}
+                        </div>
+                      </div>
+                      
+                      {/* Order Items */}
+                      <div className="space-y-2">
+                        {order.items.map((item) => (
+                          <div key={item.id} className="flex items-center gap-3 p-2 rounded-lg bg-white">
+                            <div className="w-8 h-8 sm:w-12 sm:h-12 rounded-lg overflow-hidden bg-gray-200 flex-shrink-0">
+                              <img 
+                                src={item.image || '/api/placeholder/100/100'} 
+                                alt={item.name}
+                                className="w-full h-full object-cover"
+                                onError={(e) => {
+                                  e.currentTarget.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjQiIGhlaWdodD0iNjQiIHZpZXdCb3g9IjAgMCA2NCA2NCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjY0IiBoZWlnaHQ9IjY0IiBmaWxsPSIjRjNGNEY2Ii8+CjxwYXRoIGQ9Ik0yNCAyNEg0MFY0MEgyNFYyNFoiIGZpbGw9IiM5Q0EzQUYiLz4KPC9zdmc+';
+                                }}
+                              />
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <p className="font-medium text-xs sm:text-sm truncate" style={{ color: '#16423c' }}>
+                                {item.name}
+                              </p>
+                              <p className="text-xs" style={{ color: '#6a9c89' }}>
+                                Cantidad: {item.quantity} • {order.currency === 'USD' ? '$' : 'Bs.'} {item.price.toFixed(2)}
+                              </p>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                      
+                      {/* Order Summary */}
+                      <div className="border-t pt-3">
+                        <div className="flex justify-between items-center text-sm">
+                          <span style={{ color: '#6a9c89' }}>Subtotal:</span>
+                          <span style={{ color: '#16423c' }}>
+                            {order.currency === 'USD' ? '$' : 'Bs.'} {order.subtotal.toFixed(2)}
+                          </span>
+                        </div>
+                        <div className="flex justify-between items-center text-sm">
+                          <span style={{ color: '#6a9c89' }}>Logística:</span>
+                          <span style={{ color: '#16423c' }}>
+                            {order.currency === 'USD' ? '$' : 'Bs.'} {order.logistics.toFixed(2)}
+                          </span>
+                        </div>
+                        <div className="flex justify-between items-center font-semibold text-sm sm:text-base border-t pt-2 mt-2">
+                          <span style={{ color: '#16423c' }}>Total:</span>
+                          <span style={{ color: '#16423c' }}>
+                            {order.currency === 'USD' ? '$' : 'Bs.'} {order.total.toFixed(2)}
+                          </span>
+                        </div>
+                      </div>
+                      
+                      {/* Order Details */}
+                      <div className="text-xs" style={{ color: '#6a9c89' }}>
+                        <div className="flex flex-col sm:flex-row sm:justify-between gap-1">
+                          <span>Método de pago: {order.paymentMethod}</span>
+                          <span>Fecha: {formatDate(order.createdAt)}</span>
+                        </div>
+                        {order.deliveryInfo && (
+                          <div className="mt-1">
+                            <span>Dirección: {order.deliveryInfo.address}</span>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </Card>
+                ))}
+              </div>
+            )}
           </TabsContent>
           
           <TabsContent value="addresses" className="space-y-4">
@@ -363,113 +435,6 @@ export const UserProfile = ({ onClose }: UserProfileProps) => {
               <MapPin className="h-12 w-12 mx-auto mb-4" style={{ color: '#6a9c89' }} />
               <h3 className="text-lg font-semibold mb-2" style={{ color: '#16423c' }}>Mis Direcciones</h3>
               <p className="text-sm" style={{ color: '#6a9c89' }}>Próximamente disponible</p>
-            </div>
-          </TabsContent>
-          
-          <TabsContent value="refunds" className="space-y-4 sm:space-y-6">
-            <div className="flex items-center justify-between">
-              <h3 className="text-base sm:text-lg font-semibold" style={{ color: '#16423c' }}>Mis Reintegros</h3>
-            </div>
-            
-            {refunds.length === 0 ? (
-              <div className="text-center py-6 sm:py-8">
-                <RefreshCw className="h-10 w-10 sm:h-12 sm:w-12 mx-auto mb-3 sm:mb-4" style={{ color: '#6a9c89' }} />
-                <h3 className="text-base sm:text-lg font-semibold mb-2" style={{ color: '#16423c' }}>No hay reintegros</h3>
-                <p className="text-xs sm:text-sm" style={{ color: '#6a9c89' }}>No tienes reintegros pendientes o procesados</p>
-              </div>
-            ) : (
-              <div className="space-y-3 sm:space-y-4">
-                {refunds.map((refund) => (
-                  <Card key={refund.id} className="p-3 sm:p-4" style={{ backgroundColor: '#e9efec' }}>
-                    <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3 sm:gap-4">
-                      <div className="flex items-start gap-3 sm:gap-4 flex-1">
-                        {/* Product Image */}
-                        <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-lg overflow-hidden bg-gray-200 flex-shrink-0">
-                          <img 
-                            src={refund.productImage} 
-                            alt={refund.productName}
-                            className="w-full h-full object-cover"
-                            onError={(e) => {
-                              e.currentTarget.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjQiIGhlaWdodD0iNjQiIHZpZXdCb3g9IjAgMCA2NCA2NCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjY0IiBoZWlnaHQ9IjY0IiBmaWxsPSIjRjNGNEY2Ii8+CjxwYXRoIGQ9Ik0yNCAyNEg0MFY0MEgyNFYyNFoiIGZpbGw9IiM5Q0EzQUYiLz4KPC9zdmc+';
-                            }}
-                          />
-                        </div>
-                        
-                        {/* Refund Details */}
-                        <div className="flex-1 min-w-0">
-                          <div className="flex flex-col sm:flex-row sm:items-center gap-2 mb-2">
-                            <h4 className="font-semibold text-xs sm:text-sm" style={{ color: '#16423c' }}>
-                              {refund.productName}
-                            </h4>
-                            <div className="flex justify-start sm:justify-end">
-                              {getRefundStatusBadge(refund.status)}
-                            </div>
-                          </div>
-                          
-                          <p className="text-xs sm:text-sm mb-2" style={{ color: '#6a9c89' }}>
-                            Orden: {refund.orderId}
-                          </p>
-                          
-                          <p className="text-xs sm:text-sm mb-2" style={{ color: '#16423c' }}>
-                            {refund.description}
-                          </p>
-                          
-                          <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 text-xs" style={{ color: '#6a9c89' }}>
-                            <span>Razón: {refund.reason}</span>
-                            <span>Solicitado: {formatDate(refund.requestedAt)}</span>
-                            {refund.processedAt && (
-                              <span>Procesado: {formatDate(refund.processedAt)}</span>
-                            )}
-                          </div>
-                          
-                          {refund.evidence && refund.evidence.length > 0 && (
-                            <div className="mt-2">
-                              <p className="text-xs mb-1" style={{ color: '#6a9c89' }}>
-                                Evidencia adjunta ({refund.evidence.length} archivos)
-                              </p>
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                      
-                      {/* Amount */}
-                      <div className="text-left sm:text-right flex-shrink-0">
-                        <div className="text-base sm:text-lg font-bold" style={{ color: '#16423c' }}>
-                          {refund.currency === 'USD' ? '$' : 'Bs'} {refund.currency === 'USD' ? refund.amount.toFixed(2) : refund.amount.toLocaleString('es-VE')}
-                        </div>
-                        <div className="text-xs" style={{ color: '#6a9c89' }}>
-                          {refund.currency === 'USD' ? 'USD' : 'Bolívares'}
-                        </div>
-                      </div>
-                    </div>
-                  </Card>
-                ))}
-              </div>
-            )}
-            
-            {/* Refund Info */}
-            <div className="p-3 sm:p-4 rounded-lg" style={{ backgroundColor: '#c4dad2' }}>
-              <div className="flex items-start gap-2 sm:gap-3">
-                <AlertTriangle className="h-4 w-4 sm:h-5 sm:w-5 mt-0.5" style={{ color: '#6a9c89' }} />
-                <div>
-                  <h4 className="font-semibold text-xs sm:text-sm mb-1" style={{ color: '#16423c' }}>
-                    Información sobre Reintegros
-                  </h4>
-                  <p className="text-xs" style={{ color: '#6a9c89' }}>
-                    Los reintegros se procesan cuando los productos no pasan el control de calidad. 
-                    El tiempo de procesamiento es de 3-5 días hábiles. Te notificaremos cuando 
-                    tu reintegro sea aprobado y procesado.
-                  </p>
-                </div>
-              </div>
-            </div>
-          </TabsContent>
-          
-          <TabsContent value="support" className="space-y-4">
-            <div className="text-center py-6 sm:py-8">
-              <HelpCircle className="h-10 w-10 sm:h-12 sm:w-12 mx-auto mb-3 sm:mb-4" style={{ color: '#6a9c89' }} />
-              <h3 className="text-base sm:text-lg font-semibold mb-2" style={{ color: '#16423c' }}>Soporte</h3>
-              <p className="text-xs sm:text-sm" style={{ color: '#6a9c89' }}>Próximamente disponible</p>
             </div>
           </TabsContent>
         </Tabs>

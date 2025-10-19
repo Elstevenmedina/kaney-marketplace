@@ -1,6 +1,5 @@
 import { Button } from '@/components/ui/button';
 import { ArrowRight, Store } from 'lucide-react';
-import { Link } from 'react-router-dom';
 
 export const HeroSection = () => {
   return (
@@ -33,12 +32,10 @@ export const HeroSection = () => {
             <Button 
               size="lg" 
               className="bg-primary text-primary-foreground hover:bg-primary/90 w-full sm:w-auto text-sm sm:text-base px-6 sm:px-8 py-3 sm:py-4" 
-              asChild
+              onClick={() => window.open('https://proveedores.kaneyconecta.com/login', '_blank')}
             >
-              <Link to="/sell">
-                <Store className="mr-2 h-4 w-4 sm:h-5 sm:w-5" />
-                Vender
-              </Link>
+              <Store className="mr-2 h-4 w-4 sm:h-5 sm:w-5" />
+              Vender
             </Button>
           </div>
         </div>

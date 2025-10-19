@@ -15,6 +15,7 @@ import Checkout from "./pages/Checkout";
 import CustomerProfile from "./pages/CustomerProfile";
 import SearchResults from "./pages/SearchResults";
 import KaneySostenible from "./pages/KaneySostenible";
+import TransportistasCertificados from "./pages/TransportistasCertificados";
 import PitchDeck from "./pages/PitchDeck";
 import NotFound from "./pages/NotFound";
 
@@ -39,6 +40,7 @@ const App = () => (
               <Route path="/checkout" element={<Checkout />} />
               <Route path="/profile" element={<CustomerProfile />} />
               <Route path="/sostenible" element={<KaneySostenible />} />
+              <Route path="/transportistas-certificados" element={<TransportistasCertificados />} />
               <Route path="/pitch-deck" element={<PitchDeck />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />

@@ -8,14 +8,16 @@ import cartReducer from './slices/cartSlice';
 import checkoutReducer from './slices/checkoutSlice';
 import customerProfileReducer from './slices/customerProfileSlice';
 import uiReducer from './slices/uiSlice';
+import ordersReducer from './slices/ordersSlice';
 import { cartMiddleware } from './middleware/cartMiddleware';
+import { ordersMiddleware } from './middleware/ordersMiddleware';
 
 // Persist configuration
 const persistConfig = {
   key: 'kaney-marketplace-root',
   version: 1,
   storage,
-  whitelist: ['auth', 'cart', 'ui'], // Only persist these reducers
+  whitelist: ['auth', 'cart', 'ui', 'orders'], // Only persist these reducers
   blacklist: ['marketplace', 'checkout', 'customer'] // Don't persist these
 };
 
@@ -26,7 +28,8 @@ const rootReducer = combineReducers({
   cart: cartReducer,
   checkout: checkoutReducer,
   customer: customerProfileReducer,
-  ui: uiReducer
+  ui: uiReducer,
+  orders: ordersReducer
 });
 
 // Create persisted reducer
@@ -40,7 +43,7 @@ export const store = configureStore({
       serializableCheck: {
         ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER]
       }
-    }).concat(cartMiddleware),
+    }).concat(cartMiddleware, ordersMiddleware),
   devTools: process.env.NODE_ENV !== 'production'
 });
 
