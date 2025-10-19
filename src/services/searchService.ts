@@ -258,3 +258,6 @@ export function getSearchSuggestions(query: string, products: Product[]): string
   return Array.from(suggestions).slice(0, 8);
 }
 
+
+
+
